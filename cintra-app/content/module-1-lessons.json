@@ -1,0 +1,158 @@
+{
+  "module_title_pt": "Fraude de Pagamentos Móveis",
+  "module_title_en": "Mobile Payment Fraud",
+  "lessons": [
+    {
+      "type": "interactive",
+      "title_pt": "Mensagem suspeita do M-Pesa",
+      "title_en": "Suspicious M-Pesa message",
+      "content": {
+        "channel": "sms",
+        "sender_pt": "M-Pesa",
+        "sender_en": "M-Pesa",
+        "message_pt": "A sua conta será suspensa. Responda com o seu PIN agora para confirmar a sua identidade.",
+        "message_en": "Your account will be suspended. Reply with your PIN now to confirm your identity.",
+        "choices": [
+          {
+            "text_pt": "Responder com o PIN para garantir segurança",
+            "text_en": "Reply with the PIN to be safe",
+            "correct": false,
+            "feedback_pt": "Nenhuma instituição financeira legítima pede o seu PIN por SMS. Partilhar este código dá acesso total à sua conta.",
+            "feedback_en": "No legitimate financial institution asks for your PIN by SMS. Sharing this code gives full access to your account."
+          },
+          {
+            "text_pt": "Não responder, denunciar a mensagem",
+            "text_en": "Do not reply, report the message",
+            "correct": true,
+            "feedback_pt": "Correcto. O PIN nunca deve ser partilhado. Denunciar ajuda a proteger outros utilizadores do mesmo esquema.",
+            "feedback_en": "Correct. A PIN should never be shared. Reporting it helps protect other users from the same scam."
+          },
+          {
+            "text_pt": "Ignorar e apagar",
+            "text_en": "Ignore and delete",
+            "correct": false,
+            "feedback_pt": "Melhor do que responder, mas denunciar a mensagem ajuda a alertar outras pessoas.",
+            "feedback_en": "Better than replying, but reporting the message helps warn others."
+          }
+        ]
+      }
+    },
+    {
+      "type": "interactive",
+      "title_pt": "Chamada com voz clonada por IA",
+      "title_en": "AI voice-cloned call",
+      "content": {
+        "channel": "call",
+        "sender_pt": "Chamada recebida · \"Director financeiro\"",
+        "sender_en": "Incoming call · \"Finance Director\"",
+        "message_pt": "\"Preciso que transfira 500.000 MT agora, é urgente.\" (voz clonada por IA)",
+        "message_en": "\"I need you to transfer 500,000 MT now, it's urgent.\" (AI-cloned voice)",
+        "choices": [
+          {
+            "text_pt": "Transferir de imediato, é o chefe",
+            "text_en": "Transfer immediately, it's the boss",
+            "correct": false,
+            "feedback_pt": "A clonagem de voz por IA já é suficientemente convincente para imitar superiores. Pedidos urgentes devem ser sempre verificados.",
+            "feedback_en": "AI voice cloning is now convincing enough to imitate superiors. Urgent requests should always be verified."
+          },
+          {
+            "text_pt": "Confirmar por outro canal antes de agir",
+            "text_en": "Confirm through another channel before acting",
+            "correct": true,
+            "feedback_pt": "Correcto. Ligar de volta a um número já conhecido neutraliza este tipo de ataque.",
+            "feedback_en": "Correct. Calling back a known number neutralizes this kind of attack."
+          },
+          {
+            "text_pt": "Pedir mais detalhes por telefone",
+            "text_en": "Ask for more details by phone",
+            "correct": false,
+            "feedback_pt": "Continuar na mesma chamada mantém o atacante no controlo.",
+            "feedback_en": "Staying on the same call keeps the attacker in control."
+          }
+        ]
+      }
+    },
+    {
+      "type": "interactive",
+      "title_pt": "Email falso do suporte de TI",
+      "title_en": "Fake IT support email",
+      "content": {
+        "channel": "email",
+        "sender_pt": "\"Suporte TI\" — suporte-ti@uem-portal.net",
+        "sender_en": "\"IT Support\" — support-it@uem-portal.net",
+        "message_pt": "A sua conta expira hoje. Clique aqui para repor a sua palavra-passe imediatamente.",
+        "message_en": "Your account expires today. Click here to reset your password immediately.",
+        "choices": [
+          {
+            "text_pt": "Clicar no link e repor a palavra-passe",
+            "text_en": "Click the link and reset the password",
+            "correct": false,
+            "feedback_pt": "O domínio \"uem-portal.net\" não é o domínio oficial da instituição — um sinal clássico de phishing.",
+            "feedback_en": "The domain \"uem-portal.net\" is not the institution's official domain — a classic phishing signal."
+          },
+          {
+            "text_pt": "Verificar o domínio e contactar o TI directamente",
+            "text_en": "Check the domain and contact IT directly",
+            "correct": true,
+            "feedback_pt": "Correcto. Confirmar através de um canal conhecido é a defesa mais fiável contra phishing.",
+            "feedback_en": "Correct. Confirming through a known channel is the most reliable defense against phishing."
+          },
+          {
+            "text_pt": "Reencaminhar o email a um colega para verificar",
+            "text_en": "Forward the email to a colleague to check",
+            "correct": false,
+            "feedback_pt": "Isto propaga o email potencialmente malicioso.",
+            "feedback_en": "This spreads the potentially malicious email further."
+          }
+        ]
+      }
+    },
+    {
+      "type": "standard",
+      "title_pt": "O que é engenharia social?",
+      "title_en": "What is social engineering?",
+      "content": {
+        "reading_pt": "Engenharia social é a manipulação psicológica de pessoas para que revelem informação confidencial ou realizem acções que comprometem a segurança. Ao contrário de um ataque puramente técnico, explora a confiança, a urgência e o medo. Em Moçambique, a fraude de pagamentos electrónicos foi a categoria mais comum de crime informático em 2025, representando mais de metade de todos os casos registados.",
+        "reading_en": "Social engineering is the psychological manipulation of people into revealing confidential information or taking actions that compromise security. Unlike a purely technical attack, it exploits trust, urgency, and fear. In Mozambique, electronic payment fraud was the most common cybercrime category in 2025, accounting for over half of all recorded cases.",
+        "quiz": [
+          {
+            "question_pt": "Qual destes é um exemplo de engenharia social?",
+            "question_en": "Which of these is an example of social engineering?",
+            "choices": [
+              { "text_pt": "Um vírus que se espalha automaticamente entre computadores", "text_en": "A virus that spreads automatically between computers", "correct": false },
+              { "text_pt": "Uma chamada a fingir ser o banco a pedir dados de acesso", "text_en": "A call pretending to be the bank asking for login details", "correct": true },
+              { "text_pt": "Uma falha de hardware no servidor", "text_en": "A hardware failure on a server", "correct": false }
+            ]
+          },
+          {
+            "question_pt": "Porque é a urgência uma táctica comum em fraude?",
+            "question_en": "Why is urgency a common tactic in fraud?",
+            "choices": [
+              { "text_pt": "Porque impede a vítima de pensar com calma e verificar", "text_en": "Because it stops the victim from thinking calmly and verifying", "correct": true },
+              { "text_pt": "Porque é mais rápido para o atacante escrever", "text_en": "Because it's faster for the attacker to write", "correct": false }
+            ]
+          }
+        ]
+      }
+    },
+    {
+      "type": "standard",
+      "title_pt": "Como lidar com dados pessoais em segurança",
+      "title_en": "Handling personal data safely",
+      "content": {
+        "reading_pt": "Proteger dados pessoais é uma responsabilidade tanto individual como institucional. Regras básicas: nunca partilhar palavras-passe ou PINs, usar autenticação de dois factores sempre que disponível, e verificar sempre a origem de um pedido de dados antes de responder.",
+        "reading_en": "Protecting personal data is both an individual and institutional responsibility. Basic rules: never share passwords or PINs, use two-factor authentication whenever available, and always verify the origin of a data request before responding.",
+        "quiz": [
+          {
+            "question_pt": "Qual é a melhor prática ao receber um pedido inesperado de dados pessoais?",
+            "question_en": "What's the best practice when receiving an unexpected request for personal data?",
+            "choices": [
+              { "text_pt": "Responder rapidamente para evitar problemas", "text_en": "Respond quickly to avoid problems", "correct": false },
+              { "text_pt": "Verificar a origem através de um canal conhecido antes de responder", "text_en": "Verify the source through a known channel before responding", "correct": true }
+            ]
+          }
+        ]
+      }
+    }
+  ]
+}

@@ -1,0 +1,16 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-bg0 text-text font-body;
+  background:
+    radial-gradient(1200px 600px at 85% -10%, rgba(63, 224, 208, 0.08), transparent 60%),
+    radial-gradient(900px 500px at -10% 110%, rgba(91, 141, 239, 0.08), transparent 55%),
+    #08152b;
+  min-height: 100vh;
+}
+
+.card {
+  @apply bg-card border border-cardBorder rounded-card;
+}

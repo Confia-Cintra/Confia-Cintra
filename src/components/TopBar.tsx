@@ -13,9 +13,6 @@ export default function TopBar() {
           Cintra
         </Link>
         <div className="flex items-center gap-4">
-          <Link to="/profile" className="text-xs text-textMuted hover:text-accent">
-            {t('Perfil', 'Profile')}
-          </Link>
           {profile?.role !== 'student' && (
             <>
               <Link to="/admin" className="text-xs text-textMuted hover:text-accent">
@@ -40,6 +37,18 @@ export default function TopBar() {
               EN
             </button>
           </div>
+          <Link
+            to="/profile"
+            className="flex items-center gap-2 hover:opacity-80 transition-opacity"
+            title={t('Perfil', 'Profile')}
+          >
+            <span className="w-7 h-7 rounded-full bg-accent/15 border border-accent/30 flex items-center justify-center flex-shrink-0">
+              <span className="font-display font-bold text-[10px] text-accent">
+                {getInitials(profile?.full_name)}
+              </span>
+            </span>
+            <span className="text-xs font-medium max-w-[8rem] truncate">{profile?.full_name}</span>
+          </Link>
           <button onClick={signOut} className="text-xs text-textMuted hover:text-danger">
             {t('Sair', 'Sign out')}
           </button>
@@ -47,4 +56,11 @@ export default function TopBar() {
       </div>
     </div>
   );
+}
+
+function getInitials(fullName: string | undefined): string {
+  if (!fullName) return '?';
+  const parts = fullName.trim().split(/\s+/);
+  if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
+  return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
 }

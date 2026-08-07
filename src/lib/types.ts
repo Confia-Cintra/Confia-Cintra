@@ -105,4 +105,7 @@ export interface Profile {
   institution_id: string | null;
   full_name: string;
   role: UserRole;
+  student_number: string | null;
+  date_of_birth: string | null;
+  year_of_study: string | null;
 }

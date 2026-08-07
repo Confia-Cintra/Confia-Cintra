@@ -8,6 +8,7 @@ import AdminDashboard from './pages/AdminDashboard';
 import Materials from './pages/Materials';
 import LectureView from './pages/LectureView';
 import UpdatePassword from './pages/UpdatePassword';
+import Profile from './pages/Profile';
 
 function Gate({ children }: { children: ReactNode }) {
   const { session, loading } = useAuth();
@@ -44,12 +45,18 @@ function Routed() {
         }
       />
       <Route
-        path="/admin"
+        path="/profile"
         element={
           <Gate>
-            <RequireInstructor>
-              <AdminDashboard />
-            </RequireInstructor>
+            <Profile />
+          </Gate>
+        }
+      />
+      <Route
+        path="/profile/:studentId"
+        element={
+          <Gate>
+            <Profile />
           </Gate>
         }
       />
@@ -58,6 +65,16 @@ function Routed() {
         element={
           <Gate>
             <LectureView />
+          </Gate>
+        }
+      />
+      <Route
+        path="/admin"
+        element={
+          <Gate>
+            <RequireInstructor>
+              <AdminDashboard />
+            </RequireInstructor>
           </Gate>
         }
       />

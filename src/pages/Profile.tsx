@@ -1,16 +1,47 @@
 import { useEffect, useState } from 'react';
+import { useParams } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 import { useLanguage } from '../lib/LanguageContext';
 import { supabase } from '../lib/supabase';
+import { Profile as ProfileType } from '../lib/types';
 import TopBar from '../components/TopBar';
 
 export default function Profile() {
-  const { profile } = useAuth();
+  const { studentId } = useParams();
+  const { profile: ownProfile } = useAuth();
   const { t, lang } = useLanguage();
+  const [viewedProfile, setViewedProfile] = useState<ProfileType | null>(null);
   const [courseTitle, setCourseTitle] = useState<string | null>(null);
+  const [loading, setLoading] = useState(true);
+
+  const isViewingOther = Boolean(studentId) && studentId !== ownProfile?.id;
 
   useEffect(() => {
-    if (profile?.role !== 'student') return;
+    if (!ownProfile) return;
+
+    if (!isViewingOther) {
+      setViewedProfile(ownProfile);
+      setLoading(false);
+      return;
+    }
+
+    // Viewing someone else's profile — only reaches real data if the
+    // database's row-level security allows it (instructor viewing a
+    // student at the same institution); otherwise this comes back empty.
+    setLoading(true);
+    supabase
+      .from('profiles')
+      .select('*')
+      .eq('id', studentId)
+      .single()
+      .then(({ data }) => {
+        setViewedProfile((data as ProfileType) ?? null);
+        setLoading(false);
+      });
+  }, [ownProfile, studentId, isViewingOther]);
+
+  useEffect(() => {
+    if (viewedProfile?.role !== 'student') return;
     supabase
       .from('courses')
       .select('title_pt, title_en')
@@ -20,15 +51,32 @@ export default function Profile() {
       .then(({ data }) => {
         if (data) setCourseTitle(lang === 'pt' ? data.title_pt : data.title_en);
       });
-  }, [profile, lang]);
+  }, [viewedProfile, lang]);
 
-  if (!profile) return null;
+  if (loading) {
+    return (
+      <div>
+        <TopBar />
+        <div className="text-center text-textMuted text-sm py-20">{t('A carregar...', 'Loading...')}</div>
+      </div>
+    );
+  }
 
-  const isStudent = profile.role === 'student';
+  if (!viewedProfile) {
+    return (
+      <div>
+        <TopBar />
+        <div className="text-center text-textMuted text-sm py-20">
+          {t('Não foi possível encontrar este perfil.', 'This profile could not be found.')}
+        </div>
+      </div>
+    );
+  }
 
-  const initials = getInitials(profile.full_name);
-  const formattedDob = profile.date_of_birth
-    ? new Date(profile.date_of_birth).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-GB', {
+  const isStudent = viewedProfile.role === 'student';
+  const initials = getInitials(viewedProfile.full_name);
+  const formattedDob = viewedProfile.date_of_birth
+    ? new Date(viewedProfile.date_of_birth).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-GB', {
         year: 'numeric',
         month: 'long',
         day: 'numeric',
@@ -47,7 +95,7 @@ export default function Profile() {
             <p className="text-[11px] uppercase tracking-wide text-textMuted font-mono mb-1">
               {isStudent ? t('Estudante', 'Student') : t('Instrutor', 'Instructor')}
             </p>
-            <h1 className="font-display font-bold text-xl">{profile.full_name}</h1>
+            <h1 className="font-display font-bold text-xl">{viewedProfile.full_name}</h1>
           </div>
         </div>
 
@@ -59,15 +107,15 @@ export default function Profile() {
           <div className="flex flex-col divide-y divide-cardBorder">
             <InfoRow
               label={isStudent ? t('Número de estudante', 'Student ID number') : t('Número de funcionário', 'Staff ID number')}
-              value={profile.student_number ?? '—'}
+              value={viewedProfile.student_number ?? '—'}
             />
-            <InfoRow label={t('Nome completo', 'Full name')} value={profile.full_name} />
+            <InfoRow label={t('Nome completo', 'Full name')} value={viewedProfile.full_name} />
 
             {isStudent && (
               <>
                 <InfoRow label={t('Data de nascimento', 'Date of birth')} value={formattedDob ?? t('Não indicado', 'Not provided')} />
                 <InfoRow label={t('Curso', 'Course enrolled')} value={courseTitle ?? '—'} />
-                <InfoRow label={t('Ano de estudo', 'Year of study')} value={profile.year_of_study ?? t('Não indicado', 'Not provided')} />
+                <InfoRow label={t('Ano de estudo', 'Year of study')} value={viewedProfile.year_of_study ?? t('Não indicado', 'Not provided')} />
               </>
             )}
           </div>

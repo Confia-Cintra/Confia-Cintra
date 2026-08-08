@@ -3,8 +3,13 @@ import { useParams } from 'react-router-dom';
 import { useAuth } from '../lib/AuthContext';
 import { useLanguage } from '../lib/LanguageContext';
 import { supabase } from '../lib/supabase';
-import { Profile as ProfileType } from '../lib/types';
+import { Profile as ProfileType, Exam, ExamResult } from '../lib/types';
 import TopBar from '../components/TopBar';
+
+interface PastExam {
+  exam: Exam;
+  score: number;
+}
 
 export default function Profile() {
   const { studentId } = useParams();
@@ -12,6 +17,8 @@ export default function Profile() {
   const { t, lang } = useLanguage();
   const [viewedProfile, setViewedProfile] = useState<ProfileType | null>(null);
   const [courseTitle, setCourseTitle] = useState<string | null>(null);
+  const [pastExams, setPastExams] = useState<PastExam[]>([]);
+  const [upcomingExams, setUpcomingExams] = useState<Exam[]>([]);
   const [loading, setLoading] = useState(true);
 
   const isViewingOther = Boolean(studentId) && studentId !== ownProfile?.id;
@@ -25,9 +32,6 @@ export default function Profile() {
       return;
     }
 
-    // Viewing someone else's profile — only reaches real data if the
-    // database's row-level security allows it (instructor viewing a
-    // student at the same institution); otherwise this comes back empty.
     setLoading(true);
     supabase
       .from('profiles')
@@ -53,6 +57,26 @@ export default function Profile() {
       });
   }, [viewedProfile, lang]);
 
+  useEffect(() => {
+    if (viewedProfile?.role !== 'student') return;
+    loadExams(viewedProfile.id);
+  }, [viewedProfile]);
+
+  async function loadExams(studentId: string) {
+    const { data: examsData } = await supabase.from('exams').select('*').order('position');
+    const { data: resultsData } = await supabase.from('exam_results').select('*').eq('student_id', studentId);
+
+    const exams = (examsData as Exam[]) ?? [];
+    const results = (resultsData as ExamResult[]) ?? [];
+    const scoreByExam: Record<string, number> = {};
+    results.forEach((r) => (scoreByExam[r.exam_id] = r.score));
+
+    setPastExams(
+      exams.filter((e) => scoreByExam[e.id] !== undefined).map((e) => ({ exam: e, score: scoreByExam[e.id] }))
+    );
+    setUpcomingExams(exams.filter((e) => scoreByExam[e.id] === undefined));
+  }
+
   if (loading) {
     return (
       <div>
@@ -75,13 +99,7 @@ export default function Profile() {
 
   const isStudent = viewedProfile.role === 'student';
   const initials = getInitials(viewedProfile.full_name);
-  const formattedDob = viewedProfile.date_of_birth
-    ? new Date(viewedProfile.date_of_birth).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-GB', {
-        year: 'numeric',
-        month: 'long',
-        day: 'numeric',
-      })
-    : null;
+  const formattedDob = viewedProfile.date_of_birth ? formatDate(viewedProfile.date_of_birth, lang) : null;
 
   return (
     <div>
@@ -120,6 +138,58 @@ export default function Profile() {
             )}
           </div>
         </div>
+
+        {isStudent && (
+          <div className="card p-6 mt-6">
+            <p className="text-[11px] uppercase tracking-wide text-textMuted font-mono mb-4">
+              {t('Resultados dos exames', 'Exam Results')}
+            </p>
+
+            {pastExams.length === 0 && (
+              <p className="text-textMuted text-sm mb-2">{t('Ainda sem resultados.', 'No results yet.')}</p>
+            )}
+
+            <div className="flex flex-col divide-y divide-cardBorder mb-6">
+              {pastExams.map(({ exam, score }) => {
+                const tone = scoreTone(score);
+                return (
+                  <div key={exam.id} className="py-3 first:pt-0 last:pb-0">
+                    <div className="flex items-center justify-between mb-1.5">
+                      <span className="text-sm">{lang === 'pt' ? exam.title_pt : exam.title_en}</span>
+                      <div className="flex items-center gap-3 flex-shrink-0">
+                        <span className="text-xs text-textMuted font-mono">{formatDate(exam.exam_date, lang)}</span>
+                        <span className={`text-xs font-mono ${tone.text}`}>
+                          {score}/{exam.max_score}
+                        </span>
+                      </div>
+                    </div>
+                    <div className="w-full h-1.5 bg-bg2 rounded-full overflow-hidden">
+                      <div className={`h-full ${tone.bar}`} style={{ width: `${(score / exam.max_score) * 100}%` }} />
+                    </div>
+                  </div>
+                );
+              })}
+            </div>
+
+            <p className="text-[11px] uppercase tracking-wide text-textMuted font-mono mb-3">
+              {t('Próximos exames', 'Upcoming exams')}
+            </p>
+            <div className="flex flex-col gap-1.5">
+              {upcomingExams.length === 0 && (
+                <p className="text-textMuted text-sm">{t('Nenhum exame agendado.', 'No exams scheduled.')}</p>
+              )}
+              {upcomingExams.map((exam) => (
+                <div
+                  key={exam.id}
+                  className="flex items-center justify-between px-3 py-2.5 rounded-lg bg-bg2 border border-cardBorder"
+                >
+                  <span className="text-sm">{lang === 'pt' ? exam.title_pt : exam.title_en}</span>
+                  <span className="text-xs text-textMuted font-mono">{formatDate(exam.exam_date, lang)}</span>
+                </div>
+              ))}
+            </div>
+          </div>
+        )}
       </div>
     </div>
   );
@@ -139,4 +209,18 @@ function getInitials(fullName: string | undefined): string {
   const parts = fullName.trim().split(/\s+/);
   if (parts.length === 1) return parts[0].slice(0, 2).toUpperCase();
   return (parts[0][0] + parts[parts.length - 1][0]).toUpperCase();
+}
+
+function formatDate(iso: string, lang: 'pt' | 'en'): string {
+  return new Date(iso).toLocaleDateString(lang === 'pt' ? 'pt-PT' : 'en-GB', {
+    year: 'numeric',
+    month: 'long',
+    day: 'numeric',
+  });
+}
+
+function scoreTone(score: number): { bar: string; text: string } {
+  if (score < 49) return { bar: 'bg-danger', text: 'text-danger' };
+  if (score <= 60) return { bar: 'bg-warning', text: 'text-warning' };
+  return { bar: 'bg-success', text: 'text-success' };
 }

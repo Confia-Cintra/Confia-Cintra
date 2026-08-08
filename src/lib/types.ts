@@ -100,6 +100,22 @@ export interface LessonMaterial {
   position: number;
 }
 
+export interface Exam {
+  id: string;
+  institution_id: string | null;
+  title_pt: string;
+  title_en: string;
+  exam_date: string;
+  max_score: number;
+  position: number;
+}
+
+export interface ExamResult {
+  student_id: string;
+  exam_id: string;
+  score: number;
+}
+
 export interface Profile {
   id: string;
   institution_id: string | null;
